@@ -4,331 +4,326 @@
  *
  * Licensed under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
- * 
+ *
  * Copyright 2012, Codrops
  * http://www.codrops.com
  */
 
-;( function( $, window, undefined ) {
-	
-	'use strict';
+;(function ($, window, undefined) {
 
-	// global
-	var Modernizr = window.Modernizr;
+    'use strict';
 
-	$.Windy = function( options, element ) {
-		
-		this.$el = $( element );
-		this._init( options );
-		
-	};
+    // global
+    var Modernizr = window.Modernizr;
 
-	// the options
-	$.Windy.defaults = {
-		// if we want to specify a selector that triggers the next() function. example: '#wi-nav-next'.
-		nextEl : '',
-		// if we want to specify a selector that triggers the prev() function.
-		prevEl : '',
-		// rotation and translation boundaries for the items transitions
-		boundaries : {
-			rotateX : { min : 40 , max : 90 },
-			rotateY : { min : -15 , max : 15 },
-			rotateZ : { min : -10 , max : 10 },
-			translateX : { min : -200 , max : 200 },
-			translateY : { min : -400 , max : -200 },
-			translateZ : { min : 250 , max : 550 }
-		}
-	};
+    $.Windy = function (options, element) {
 
-	$.Windy.prototype = {
+        this.$el = $(element);
+        this._init(options);
 
-		_init : function( options ) {
-			
-			// options
-			this.options = $.extend( true, {}, $.Windy.defaults, options );
+    };
 
-			// https://github.com/twitter/bootstrap/issues/2870
-			this.transEndEventNames = {
-				'WebkitTransition' : 'webkitTransitionEnd',
-				'MozTransition' : 'transitionend',
-				'OTransition' : 'oTransitionEnd',
-				'msTransition' : 'MSTransitionEnd',
-				'transition' : 'transitionend'
-			};
-			this.transEndEventName = this.transEndEventNames[ Modernizr.prefixed( 'transition' ) ];
+    // the options
+    $.Windy.defaults = {
+        // if we want to specify a selector that triggers the next() function. example: '#wi-nav-next'.
+        nextEl: '',
+        // if we want to specify a selector that triggers the prev() function.
+        prevEl: '',
+        // rotation and translation boundaries for the items transitions
+        boundaries: {
+            rotateX: {min: 40, max: 90},
+            rotateY: {min: -15, max: 15},
+            rotateZ: {min: -10, max: 10},
+            translateX: {min: -200, max: 200},
+            translateY: {min: -400, max: -200},
+            translateZ: {min: 250, max: 550}
+        }
+    };
 
-			this.$items = this.$el.children( 'li' );
-			this.itemsCount = this.$items.length;
+    $.Windy.prototype = {
 
-			this.resetTransformStr = 'translateX( 0px ) translateY( 0px ) translateZ( 0px ) rotateX( 0deg ) rotateY( 0deg ) rotateZ( 0deg )';
+        _init: function (options) {
 
-			this.supportTransitions = Modernizr.csstransitions;
-			this.support3d = Modernizr.csstransforms3d;
+            // options
+            this.options = $.extend(true, {}, $.Windy.defaults, options);
 
-			// show first item
-			this.current = 0;
-			this.$items.eq( this.current ).show();
-			
-			this._initEvents();
+            // https://github.com/twitter/bootstrap/issues/2870
+            this.transEndEventNames = {
+                'WebkitTransition': 'webkitTransitionEnd',
+                'MozTransition': 'transitionend',
+                'OTransition': 'oTransitionEnd',
+                'msTransition': 'MSTransitionEnd',
+                'transition': 'transitionend'
+            };
+            this.transEndEventName = this.transEndEventNames[Modernizr.prefixed('transition')];
 
-		},
-		_getRandTransform : function() {
+            this.$items = this.$el.children('li');
+            this.itemsCount = this.$items.length;
 
-			return {
-				rx : Math.floor( Math.random() * ( this.options.boundaries.rotateX.max - this.options.boundaries.rotateX.min + 1 ) + this.options.boundaries.rotateX.min ),
-				ry : Math.floor( Math.random() * ( this.options.boundaries.rotateY.max - this.options.boundaries.rotateY.min + 1 ) + this.options.boundaries.rotateY.min ),
-				rz : Math.floor( Math.random() * ( this.options.boundaries.rotateZ.max - this.options.boundaries.rotateZ.min + 1 ) + this.options.boundaries.rotateZ.min ),
-				tx : Math.floor( Math.random() * ( this.options.boundaries.translateX.max - this.options.boundaries.translateX.min + 1 ) + this.options.boundaries.translateX.min ),
-				ty : Math.floor( Math.random() * ( this.options.boundaries.translateY.max - this.options.boundaries.translateY.min + 1 ) + this.options.boundaries.translateY.min ),
-				tz : Math.floor( Math.random() * ( this.options.boundaries.translateZ.max - this.options.boundaries.translateZ.min + 1 ) + this.options.boundaries.translateZ.min )
-			};
+            this.resetTransformStr = 'translateX( 0px ) translateY( 0px ) translateZ( 0px ) rotateX( 0deg ) rotateY( 0deg ) rotateZ( 0deg )';
 
-		},
-		_initEvents : function() {
+            this.supportTransitions = Modernizr.csstransitions;
+            this.support3d = Modernizr.csstransforms3d;
 
-			var self = this;
+            // show first item
+            this.current = 0;
+            this.$items.eq(this.current).show();
 
-			this.$items.on( this.transEndEventName, function( event ) {
+            this._initEvents();
 
-				self._onTransEnd( $( this ) );
+        },
+        _getRandTransform: function () {
 
-			} );
+            return {
+                rx: Math.floor(Math.random() * (this.options.boundaries.rotateX.max - this.options.boundaries.rotateX.min + 1) + this.options.boundaries.rotateX.min),
+                ry: Math.floor(Math.random() * (this.options.boundaries.rotateY.max - this.options.boundaries.rotateY.min + 1) + this.options.boundaries.rotateY.min),
+                rz: Math.floor(Math.random() * (this.options.boundaries.rotateZ.max - this.options.boundaries.rotateZ.min + 1) + this.options.boundaries.rotateZ.min),
+                tx: Math.floor(Math.random() * (this.options.boundaries.translateX.max - this.options.boundaries.translateX.min + 1) + this.options.boundaries.translateX.min),
+                ty: Math.floor(Math.random() * (this.options.boundaries.translateY.max - this.options.boundaries.translateY.min + 1) + this.options.boundaries.translateY.min),
+                tz: Math.floor(Math.random() * (this.options.boundaries.translateZ.max - this.options.boundaries.translateZ.min + 1) + this.options.boundaries.translateZ.min)
+            };
 
-			if( this.options.nextEl !== '' ) {
+        },
+        _initEvents: function () {
 
-				$( this.options.nextEl ).on( 'click.windy', function() {
+            var self = this;
 
-					self.next();
-					return false;
+            this.$items.on(this.transEndEventName, function (event) {
 
-				} );
+                self._onTransEnd($(this));
 
-			}
+            });
 
-			if( this.options.prevEl !== '' ) {
+            if (this.options.nextEl !== '') {
 
-				$( this.options.prevEl ).on( 'click.windy', function() {
+                $(this.options.nextEl).on('click.windy', function () {
 
-					self.prev();
-					return false;
+                    self.next();
+                    return false;
 
-				} );
+                });
 
-			}
+            }
 
-		},
-		_onTransEnd : function( el ) {
+            if (this.options.prevEl !== '') {
 
-			el.removeClass( 'wi-move' );
+                $(this.options.prevEl).on('click.windy', function () {
 
-			if( el.data( 'dir' ) === 'right' ) {
+                    self.prev();
+                    return false;
 
-				var styleStart = {
-					zIndex : 1,
-					opacity : 1
-				};
+                });
 
-				if( this.support3d ) {
+            }
 
-					styleStart.transform = this.resetTransformStr;
+        },
+        _onTransEnd: function (el) {
 
-				}
-				else if( this.supportTransitions ) {
+            el.removeClass('wi-move');
 
-					styleStart.left = 0;
-					styleStart.top = 0;
+            if (el.data('dir') === 'right') {
 
-				}
+                var styleStart = {
+                    zIndex: 1,
+                    opacity: 1
+                };
 
-				el.hide().css( styleStart );
+                if (this.support3d) {
 
-			}
+                    styleStart.transform = this.resetTransformStr;
 
-		},
-		// public method: shows item with index idx
-		navigate : function( idx ) {
+                } else if (this.supportTransitions) {
 
-			var self = this,
-				// current item
-				$current = this.$items.eq( this.current ),
-				// next item to be shown
-				$next = this.$items.eq( idx ),
-				// random transformation configuration
-				randTranform = this._getRandTransform(),
-				// the z-index is higher for the first items so that the ordering is correct if more items are moving at the same time
-				styleEnd = {
-					zIndex : this.itemsCount + 1 - idx,
-					opacity : 0
-				},
-				styleStart = {
-					opacity : 1
-				};
+                    styleStart.left = 0;
+                    styleStart.top = 0;
 
-			if( this.support3d ) {
+                }
 
-				styleStart.transform = self.resetTransformStr;
-				styleEnd.transform = 'translateX(' + randTranform.tx + 'px) translateY(' + randTranform.ty + 'px) translateZ(' + randTranform.tz + 'px) rotateX(' + randTranform.rx + 'deg) rotateY(' + randTranform.ry + 'deg) rotateZ(' + randTranform.rz + 'deg)';
+                el.hide().css(styleStart);
 
-			}
-			else if( this.supportTransitions ) {
+            }
 
-				styleStart.left = 0;
-				styleStart.top = 0;
-				styleEnd.left = randTranform.tx;
-				styleEnd.top = randTranform.ty;
+        },
+        // public method: shows item with index idx
+        navigate: function (idx) {
 
-			}
+            var self = this,
+                // current item
+                $current = this.$items.eq(this.current),
+                // next item to be shown
+                $next = this.$items.eq(idx),
+                // random transformation configuration
+                randTranform = this._getRandTransform(),
+                // the z-index is higher for the first items so that the ordering is correct if more items are moving at the same time
+                styleEnd = {
+                    zIndex: this.itemsCount + 1 - idx,
+                    opacity: 0
+                },
+                styleStart = {
+                    opacity: 1
+                };
 
-			// if navigating to the right..
-			if( idx > this.current ) {
+            if (this.support3d) {
 
-				// if last step was to go to the left..
-				if( this.dir === 'left') {
+                styleStart.transform = self.resetTransformStr;
+                styleEnd.transform = 'translateX(' + randTranform.tx + 'px) translateY(' + randTranform.ty + 'px) translateZ(' + randTranform.tz + 'px) rotateX(' + randTranform.rx + 'deg) rotateY(' + randTranform.ry + 'deg) rotateZ(' + randTranform.rz + 'deg)';
 
-					// reset all z-indexes and hide items except the current
-					this.$items.not( $current ).css( 'z-index', 1 ).hide();
-				
-				}
-				
-				this.dir = 'right';
+            } else if (this.supportTransitions) {
 
-				$current.addClass( 'wi-move' )
-						.data( 'dir', 'right' )
-						.css( styleEnd );
+                styleStart.left = 0;
+                styleStart.top = 0;
+                styleEnd.left = randTranform.tx;
+                styleEnd.top = randTranform.ty;
 
-				if( $next.hasClass( 'wi-move' ) ) {
+            }
 
-					$next.removeClass( 'wi-move' );	
-				
-				}
-				
-				// apply styleStart just to make sure..
-				$next.css( styleStart ).show();
+            // if navigating to the right..
+            if (idx > this.current) {
 
-				if( !this.supportTransitions ) {
-			
-					this._onTransEnd( $current );
+                // if last step was to go to the left..
+                if (this.dir === 'left') {
 
-				}
-			
-			}
-			else if( idx < this.current ) {
+                    // reset all z-indexes and hide items except the current
+                    this.$items.not($current).css('z-index', 1).hide();
 
-				this.dir = 'left';
+                }
 
-				$next.data( 'dir', 'left' ).css( styleEnd ).show();
+                this.dir = 'right';
 
-				setTimeout( function() {
+                $current.addClass('wi-move')
+                    .data('dir', 'right')
+                    .css(styleEnd);
 
-					$next.addClass( 'wi-move' )
-						 .data( 'dir', 'left' )
-						 .css( styleStart );
+                if ($next.hasClass('wi-move')) {
 
-					if( !self.supportTransitions ) {
-			
-						self._onTransEnd( $next );
-			
-					}
+                    $next.removeClass('wi-move');
 
-				}, 20 );
-
-			}
-
-			this.current = idx;
-
-		},
-		// public method: returns total number of items
-		getItemsCount : function() {
-
-			return this.itemsCount;
-
-		},
-		// public method: shows next item
-		next : function() {
-
-			if( this.current < this.itemsCount - 1 ) {
-				
-				var idx = this.current + 1;
-				this.navigate( idx );
-
-			}
-
-		},
-		// public method: shows previous item
-		prev : function() {
-
-			if( this.current > 0 ) {
-				
-				var idx = this.current - 1;
-				this.navigate( idx );
-
-			}
-
-		}
-
-	};
-	
-	var logError = function( message ) {
-
-		if ( window.console ) {
-
-			window.console.error( message );
-		
-		}
-
-	};
-	
-	$.fn.windy = function( options ) {
-
-		var instance = $.data( this, 'windy' );
-		
-		if ( typeof options === 'string' ) {
-			
-			var args = Array.prototype.slice.call( arguments, 1 );
-			
-			this.each(function() {
-			
-				if ( !instance ) {
-
-					logError( "cannot call methods on windy prior to initialization; " +
-					"attempted to call method '" + options + "'" );
-					return;
-				
-				}
-				
-				if ( !$.isFunction( instance[options] ) || options.charAt(0) === "_" ) {
-
-					logError( "no such method '" + options + "' for windy instance" );
-					return;
-				
-				}
-				
-				instance[ options ].apply( instance, args );
-			
-			});
-		
-		} 
-		else {
-		
-			this.each(function() {
-				
-				if ( instance ) {
-
-					instance._init();
-				
-				}
-				else {
-
-					instance = $.data( this, 'windy', new $.Windy( options, this ) );
-				
-				}
-
-			});
-		
-		}
-		
-		return instance;
-		
-	};
-	
-} )( jQuery, window );
+                }
+
+                // apply styleStart just to make sure..
+                $next.css(styleStart).show();
+
+                if (!this.supportTransitions) {
+
+                    this._onTransEnd($current);
+
+                }
+
+            } else if (idx < this.current) {
+
+                this.dir = 'left';
+
+                $next.data('dir', 'left').css(styleEnd).show();
+
+                setTimeout(function () {
+
+                    $next.addClass('wi-move')
+                        .data('dir', 'left')
+                        .css(styleStart);
+
+                    if (!self.supportTransitions) {
+
+                        self._onTransEnd($next);
+
+                    }
+
+                }, 20);
+
+            }
+
+            this.current = idx;
+
+        },
+        // public method: returns total number of items
+        getItemsCount: function () {
+
+            return this.itemsCount;
+
+        },
+        // public method: shows next item
+        next: function () {
+
+            if (this.current < this.itemsCount - 1) {
+
+                var idx = this.current + 1;
+                this.navigate(idx);
+
+            }
+
+        },
+        // public method: shows previous item
+        prev: function () {
+
+            if (this.current > 0) {
+
+                var idx = this.current - 1;
+                this.navigate(idx);
+
+            }
+
+        }
+
+    };
+
+    var logError = function (message) {
+
+        if (window.console) {
+
+            window.console.error(message);
+
+        }
+
+    };
+
+    $.fn.windy = function (options) {
+
+        var instance = $.data(this, 'windy');
+
+        if (typeof options === 'string') {
+
+            var args = Array.prototype.slice.call(arguments, 1);
+
+            this.each(function () {
+
+                if (!instance) {
+
+                    logError("cannot call methods on windy prior to initialization; " +
+                        "attempted to call method '" + options + "'");
+                    return;
+
+                }
+
+                if (!$.isFunction(instance[options]) || options.charAt(0) === "_") {
+
+                    logError("no such method '" + options + "' for windy instance");
+                    return;
+
+                }
+
+                instance[options].apply(instance, args);
+
+            });
+
+        } else {
+
+            this.each(function () {
+
+                if (instance) {
+
+                    instance._init();
+
+                } else {
+
+                    instance = $.data(this, 'windy', new $.Windy(options, this));
+
+                }
+
+            });
+
+        }
+
+        return instance;
+
+    };
+
+})(jQuery, window);
